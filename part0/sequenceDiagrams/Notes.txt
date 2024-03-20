@@ -1,0 +1,2 @@
+For this part 0, create a png file with the corresponding exercise number.
+I created the diagrams using https://mermaid.live/
