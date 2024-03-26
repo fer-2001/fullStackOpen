@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './services/persons'
+
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
@@ -8,15 +9,12 @@ const App = () => {
   const [showPersons, setShowPersons] = useState('') 
   
   useEffect(() => {
-    console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled')
-        setPersons(response.data)
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
       })
   }, [])
-  console.log('render', persons.length, 'notes')
 
   
   const addPerson = (event) =>{
@@ -30,12 +28,27 @@ const App = () => {
       alert(`${personObject.name} is already in the phoneBook`)
     }
     else{
-      setPersons(persons.concat(personObject))
-      setNewName('')
-      setNewNumber('')
+      personService.putNew(personObject)
+      .then(
+        setPersons(persons.concat(personObject)),
+        setNewName(''),
+        setNewNumber('')
+      )
     }
   }
 
+
+const deletePerson = (person) => {
+  if (window.confirm(`Are you sure you want to delete ${person.name}?`)) {
+    personService.quit(person.id, person) 
+      .then(() => {
+        setPersons(persons.filter((p) => p.id !== person.id)); 
+      })
+      .catch((error) => {
+        console.error('Error deleting person:', error);
+      });
+  }
+};
 
 
   const handleNewName = (event) =>{
@@ -75,6 +88,7 @@ const App = () => {
         {filteredPersons.map((person, index) => (
             <li key={index}>
               {person.name} {person.number}
+              <button onClick={() => deletePerson(person)}> Delete </button>
             </li>
         ))}
       </ul>
