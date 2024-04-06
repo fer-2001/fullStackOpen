@@ -1,5 +1,7 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
+
 
 let persons = [
     [
@@ -46,11 +48,44 @@ app.get('/api/persons/:id', (request, response) => {
 
 app.get('/info', (request, response) => {
     let mensaje = "Phone book has info for " + persons[0].length + " people"
-    let currentTime = new Date();
-    console.log(mensaje)
-    
+    let currentTime = new Date();    
     response.send(`<p>${mensaje}</p>` + `<p> ${currentTime} </p>`)
   })
+
+app.delete('/api/persons/:id', (request, response) => {
+  let personDelete = persons[0].find(person => person.id === Number(request.params.id))
+  persons[0] = persons[0].filter(person => person.id !== Number(request.params.id))
+  response.status(204).end()
+})
+
+const generateId = () => {
+  const maxId = persons[0].length > 0
+    ? Math.max(...persons[0].map(n => n.id))
+    : 0
+  return maxId + 1
+}
+
+
+app.post('/api/persons', (request, response) => {
+  const body = request.body
+
+  if (!body.name || !body.number) {
+    return response.status(400).json({ 
+      error: 'name or number missing' 
+    })
+  }
+
+
+  const person = {
+    id: generateId(),
+    name: body.name,
+    number: body.number,
+  }
+
+  persons[0].push(person) // Usando push para agregar al final del arreglo
+
+  response.json(person)
+})
 
 
 const PORT = 3001
