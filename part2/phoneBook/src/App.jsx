@@ -6,7 +6,7 @@ const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [showPersons, setShowPersons] = useState('') 
+  const [showPersons, setShowPersons] = useState('');
   
   useEffect(() => {
     personService
@@ -85,11 +85,11 @@ const deletePerson = (person) => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        {filteredPersons.map((person, index) => (
-            <li key={index}>
-              {person.name} {person.number}
-              <button onClick={() => deletePerson(person)}> Delete </button>
-            </li>
+      {Array.isArray(filteredPersons) && filteredPersons.map((person, index) => (
+        <li key={index}>
+          {person.name} {person.number}
+          <button onClick={() => deletePerson(person)}> Delete </button>
+        </li>
         ))}
       </ul>
     </div>
